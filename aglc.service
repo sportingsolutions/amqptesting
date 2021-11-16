@@ -1,0 +1,14 @@
+[Unit]
+Description=Aglc Rmq
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/amqp scheme username 'password' host vhost port
+ExecStop=/bin/kill -9 ${MAINPID}
+KillSignal=SIGCONT
+PrivateTmp=true
+StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target
