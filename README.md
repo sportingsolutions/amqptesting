@@ -21,3 +21,12 @@ get those messages
 for example
 
 ```amqp amqp guest guest amqp.cuac.com /myvhost 5672```
+
+## if you wanted to run amqps
+
+```amqp amqps username passwords hostname vhost 5671```
+
+I haven't really tested this much but it seems to work.
+
+
+
