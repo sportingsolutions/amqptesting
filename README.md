@@ -2,9 +2,9 @@
 * Copy amqp to /usr/local/bin
 * Configure units
 * Copy unit files to /etc/systemd/system/aglc.service for example
-* systemctl enable aglc
-* systemctl daemon-reload
-* systemctl start aglc.service
+* `systemctl enable aglc`
+* `systemctl daemon-reload`
+* `systemctl start aglc.service`
 
 # Logs
 To view logs you can tail wherever syslog is writing to or use 
