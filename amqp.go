@@ -55,7 +55,7 @@ func main() {
 	fmt.Printf("Connected to %s://%s:%s/%s\n", scheme, hostname, port, vhost)
 	t := time.Now()
 	st := fmt.Sprintf("%d/%d/%d:%d:%d:%d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
-	for true {
+	for {
 		time.Sleep(time.Second)
 		ct := time.Now()
 		sct := fmt.Sprintf("%d/%d/%d:%d:%d:%d", ct.Year(), ct.Month(), ct.Day(), ct.Hour(), ct.Minute(), ct.Second())
