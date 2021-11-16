@@ -17,5 +17,7 @@ get those messages
 
 # Running by hand
 ```amqp scheme username password hostname vhost port```
+
 for example
+
 ```amqp amqp guest guest amqp.cuac.com /myvhost 5672```
