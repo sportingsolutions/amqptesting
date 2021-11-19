@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/streadway/amqp"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -19,11 +20,20 @@ func main() {
 	hostname := os.Args[4]
 	vhost := os.Args[5]
 	port := os.Args[6]
+	// default interval
+	interval := 10
+	var err error
+	if len(os.Args) == 8 {
+		interval, err = strconv.Atoi(os.Args[7])
+		if err != nil {
+			panic("timeout needs to be able to convert to int")
+		}
+	}
 	s := fmt.Sprintf("%s://%s:%s@%s:%s/%s", scheme, username, password, hostname, port, vhost)
 	var config amqp.Config
-	config.Heartbeat = 10 *  time.Second
+	config.Heartbeat = time.Duration(interval) * time.Second
 	// config.Heartbeat = 5 * time.Second
-	conn, err := amqp.DialConfig(s,config)
+	conn, err := amqp.DialConfig(s, config)
 	if err != nil {
 		fmt.Printf("Failed Initializing Broker Connection to %s\n", hostname)
 		panic(err)
