@@ -21,7 +21,7 @@ func main() {
 	port := os.Args[6]
 	s := fmt.Sprintf("%s://%s:%s@%s:%s/%s", scheme, username, password, hostname, port, vhost)
 	var config amqp.Config
-	config.Heartbeat = 5 *  time.Second
+	config.Heartbeat = 10 *  time.Second
 	// config.Heartbeat = 5 * time.Second
 	conn, err := amqp.DialConfig(s,config)
 	if err != nil {
