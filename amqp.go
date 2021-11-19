@@ -20,7 +20,10 @@ func main() {
 	vhost := os.Args[5]
 	port := os.Args[6]
 	s := fmt.Sprintf("%s://%s:%s@%s:%s/%s", scheme, username, password, hostname, port, vhost)
-	conn, err := amqp.Dial(s)
+	var config amqp.Config
+	config.Heartbeat = 5 *  time.Second
+	// config.Heartbeat = 5 * time.Second
+	conn, err := amqp.DialConfig(s,config)
 	if err != nil {
 		fmt.Printf("Failed Initializing Broker Connection to %s\n", hostname)
 		panic(err)
