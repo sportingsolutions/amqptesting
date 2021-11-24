@@ -10,7 +10,11 @@ import (
 	"github.com/streadway/amqp"
 	"os"
 	"strconv"
+	"syscall"
+	"golang.org/x/sys/unix"
 	"time"
+	"strings"
+	"net"
 )
 
 func main() {
@@ -31,7 +35,29 @@ func main() {
 	}
 	s := fmt.Sprintf("%s://%s:%s@%s:%s/%s", scheme, username, password, hostname, port, vhost)
 	var config amqp.Config
+
 	config.Heartbeat = time.Duration(interval) * time.Second
+	config.Dial = func(network, addr string) (net.Conn, error) {
+
+		raddr, err := net.ResolveIPAddr("ip", strings.Split(addr, ":")[0])
+		if err != nil {
+			panic(err)
+		}
+		port, err := strconv.Atoi(strings.Split(addr, ":")[1])
+		if err != nil {
+			panic(err)
+		}
+		tcpaddr := net.TCPAddr{raddr.IP, port, ""}
+		tcp, err := net.DialTCP("tcp", nil, &tcpaddr)
+		if err != nil {
+			panic(err)
+		}
+		ff, _ := tcp.File()
+		err = syscall.SetsockoptInt(int(ff.Fd()), unix.SOL_SOCKET, unix.SO_REUSEPORT, 0)
+
+		return tcp, nil
+	}
+
 	// config.Heartbeat = 5 * time.Second
 	conn, err := amqp.DialConfig(s, config)
 	if err != nil {
