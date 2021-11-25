@@ -57,8 +57,6 @@ func main() {
 
 		return tcp, nil
 	}
-
-	// config.Heartbeat = 5 * time.Second
 	conn, err := amqp.DialConfig(s, config)
 	if err != nil {
 		fmt.Printf("Failed Initializing Broker Connection to %s\n", hostname)
