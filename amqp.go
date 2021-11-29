@@ -99,7 +99,7 @@ func main() {
 		if conn.IsClosed() == false {
 			fmt.Printf("[Connected] to:%s://%s/%s started at:%s and still connected at:%s\n", scheme, hostname, vhost, st, sct)
 		} else {
-			fmt.Printf("[Disconnected] to:%s://%s/%s started at:%s and died at:%s\n", scheme, hostname, vhost, sct)
+			fmt.Printf("[Disconnected] to:%s://%s/%s started at:%s and died at:%s\n", scheme, hostname, vhost, sct,ct)
 		}
 	}
 
