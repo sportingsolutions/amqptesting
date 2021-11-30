@@ -74,7 +74,7 @@ func main() {
 	}
 
 	msgs, err := ch.Consume(
-		"TestQueue",
+		"test-queue",
 		"",
 		true,
 		false,
