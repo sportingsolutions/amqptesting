@@ -6,34 +6,41 @@ if you compile this yourself you won't get those printed out unless you modify t
 your own GOPATH
 */
 import (
+	"flag"
 	"fmt"
 	"github.com/streadway/amqp"
-	"os"
-	"strconv"
-	"syscall"
 	"golang.org/x/sys/unix"
-	"time"
-	"strings"
 	"net"
+	"strconv"
+	"strings"
+	"syscall"
+	"time"
 )
 
+var (
+	scheme   = flag.String("scheme", "amqp", "AMQP scheme")
+	username = flag.String("username", "guest", "AMQP username")
+	password = flag.String("password", "guest", "AMQP password")
+	vhost    = flag.String("vhost", "/", "AMQP vhost")
+	hostname = flag.String("hostname", "localhost", "AMQP hostname")
+	port     = flag.String("port", "5672", "AMQP port")
+	interval = flag.String("interval", "10", "AMQP port")
+)
+
+func init() {
+	flag.Parse()
+}
 func main() {
-	scheme := os.Args[1]
-	username := os.Args[2]
-	password := os.Args[3]
-	hostname := os.Args[4]
-	vhost := os.Args[5]
-	port := os.Args[6]
-	// default interval
-	interval := 10
-	var err error
-	if len(os.Args) == 8 {
-		interval, err = strconv.Atoi(os.Args[7])
-		if err != nil {
-			panic("timeout needs to be able to convert to int")
-		}
-	}
+	scheme := *scheme
+	username := *username
+	password := *password
+	hostname := *hostname
+	vhost := *vhost
+	port := *port
+	interval, _ := strconv.Atoi(*interval)
+
 	s := fmt.Sprintf("%s://%s:%s@%s:%s/%s", scheme, username, password, hostname, port, vhost)
+	fmt.Println(s)
 	var config amqp.Config
 
 	config.Heartbeat = time.Duration(interval) * time.Second
@@ -99,7 +106,7 @@ func main() {
 		if conn.IsClosed() == false {
 			fmt.Printf("[Connected] to:%s://%s/%s started at:%s and still connected at:%s\n", scheme, hostname, vhost, st, sct)
 		} else {
-			fmt.Printf("[Disconnected] to:%s://%s/%s started at:%s and died at:%s\n", scheme, hostname, vhost, sct,ct)
+			fmt.Printf("[Disconnected] to:%s://%s/%s started at:%s and died at:%s\n", scheme, hostname, vhost, sct, ct)
 		}
 	}
 
