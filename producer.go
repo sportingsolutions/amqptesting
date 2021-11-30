@@ -12,10 +12,10 @@ import (
 var (
 	uri          = flag.String("uri", "amqp://guest:guest@localhost:5672/", "AMQP URI")
 	exchangeName = flag.String("exchange", "test-exchange", "Durable AMQP exchange name")
+	queueName    = flag.String("queuename", "test-queue", "Durable AMQP exchange name")
 	exchangeType = flag.String("exchange-type", "direct", "Exchange type - direct|fanout|topic|x-custom")
 	routingKey   = flag.String("key", "test-key", "AMQP routing key")
 	body         = flag.String("body", "foobar", "Body of message")
-	reliable     = flag.Bool("reliable", false, "Wait for the publisher confirmation before exiting")
 )
 
 func init() {
@@ -23,13 +23,13 @@ func init() {
 }
 
 func main() {
-	if err := publish(*uri, *exchangeName, *exchangeType, *routingKey, *body, *reliable); err != nil {
+	if err := publish(*uri, *exchangeName, *exchangeType, *routingKey, *body); err != nil {
 		log.Fatalf("%s", err)
 	}
 	log.Printf("published %dB OK", len(*body))
 }
 
-func publish(amqpURI, exchange, exchangeType, routingKey, body string, reliable bool) error {
+func publish(amqpURI, exchange, exchangeType, routingKey, body string) error {
 
 	log.Printf("dialing %q", amqpURI)
 	connection, err := amqp.Dial(amqpURI)
@@ -57,21 +57,9 @@ func publish(amqpURI, exchange, exchangeType, routingKey, body string, reliable 
 		return fmt.Errorf("Exchange Declare: %s", err)
 	}
 
-	channel.QueueDeclare("TestQueue", true, false, false, false, nil)
-
-	channel.QueueBind("TestQueue", "test-key", "test-exchange", false, nil)
-
-	if reliable {
-		log.Printf("enabling publishing confirms.")
-		if err := channel.Confirm(false); err != nil {
-			return fmt.Errorf("Channel could not be put into confirm mode: %s", err)
-		}
-
-		confirms := channel.NotifyPublish(make(chan amqp.Confirmation, 1))
-
-		defer confirmOne(confirms)
-	}
-
+	q := *queueName
+	channel.QueueDeclare(q, true, false, false, false, nil)
+	channel.QueueBind(q, routingKey, exchange, false, nil)
 	log.Printf("declared Exchange, publishing %dB body (%q)", len(body), body)
 	for true {
 		time.Sleep(1 * time.Second)
@@ -102,12 +90,3 @@ func publish(amqpURI, exchange, exchangeType, routingKey, body string, reliable 
 	return nil
 }
 
-func confirmOne(confirms <-chan amqp.Confirmation) {
-	log.Printf("waiting for confirmation of one publishing")
-
-	if confirmed := <-confirms; confirmed.Ack {
-		log.Printf("confirmed delivery with delivery tag: %d", confirmed.DeliveryTag)
-	} else {
-		log.Printf("failed delivery of delivery tag: %d", confirmed.DeliveryTag)
-	}
-}
