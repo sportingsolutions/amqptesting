@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/amqp scheme username 'password' host vhost port
+ExecStart=/usr/local/bin/amqp -scheme scheme -username username -password 'password' -hostname host -vhost vhost -port port -internval 60
 ExecStop=/bin/kill -9 ${MAINPID}
 KillSignal=SIGCONT
 PrivateTmp=true
