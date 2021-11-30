@@ -15,7 +15,6 @@ var (
 	queueName    = flag.String("queuename", "test-queue", "Durable AMQP exchange name")
 	exchangeType = flag.String("exchange-type", "direct", "Exchange type - direct|fanout|topic|x-custom")
 	routingKey   = flag.String("key", "test-key", "AMQP routing key")
-	body         = flag.String("body", "foobar", "Body of message")
 )
 
 func init() {
@@ -23,13 +22,12 @@ func init() {
 }
 
 func main() {
-	if err := publish(*uri, *exchangeName, *exchangeType, *routingKey, *body); err != nil {
+	if err := publish(*uri, *exchangeName, *exchangeType, *routingKey); err != nil {
 		log.Fatalf("%s", err)
 	}
-	log.Printf("published %dB OK", len(*body))
 }
 
-func publish(amqpURI, exchange, exchangeType, routingKey, body string) error {
+func publish(amqpURI, exchange, exchangeType, routingKey string) error {
 
 	log.Printf("dialing %q", amqpURI)
 	connection, err := amqp.Dial(amqpURI)
@@ -60,12 +58,11 @@ func publish(amqpURI, exchange, exchangeType, routingKey, body string) error {
 	q := *queueName
 	channel.QueueDeclare(q, true, false, false, false, nil)
 	channel.QueueBind(q, routingKey, exchange, false, nil)
-	log.Printf("declared Exchange, publishing %dB body (%q)", len(body), body)
 	for true {
 		time.Sleep(1 * time.Second)
 		t := time.Now()
 		st := fmt.Sprintf("%d/%d/%d:%d:%d:%d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
-		body = fmt.Sprintf("%s -> foobar", st)
+		body := fmt.Sprintf("%s -> foobar", st)
 		fmt.Printf("Sending %s \n",body)
 		err = channel.Publish(
 			exchange,   // publish to an exchange
