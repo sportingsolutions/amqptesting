@@ -78,6 +78,7 @@ func publish(amqpURI, exchange, exchangeType, routingKey, body string, reliable 
 		t := time.Now()
 		st := fmt.Sprintf("%d/%d/%d:%d:%d:%d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 		body = fmt.Sprintf("%s -> foobar", st)
+		fmt.Printf("Sending %s \n",body)
 		err = channel.Publish(
 			exchange,   // publish to an exchange
 			routingKey, // routing to 0 or more queues
