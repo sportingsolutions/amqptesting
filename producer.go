@@ -59,7 +59,7 @@ func publish(amqpURI, exchange, exchangeType, routingKey string) error {
 	channel.QueueDeclare(q, true, false, false, false, nil)
 	channel.QueueBind(q, routingKey, exchange, false, nil)
 	for true {
-		time.Sleep(1 * time.Second)
+		time.Sleep(5 * time.Second)
 		t := time.Now()
 		st := fmt.Sprintf("%d/%d/%d:%d:%d:%d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 		body := fmt.Sprintf("%s -> foobar", st)
